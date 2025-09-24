@@ -1,0 +1,49 @@
+name: Deploy GitHub Search App to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: deploy-app
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Post-deployment notification
+        if: success()
+        run: |
+          echo "🎉 GitHub Search App deployed successfully!"
+          echo "📱 App is live at: https://imammaddev.github.io/Github-Search-App/"
+          echo "✨ Static files served directly from GitHub Pages"
+
+      - name: Deployment failed notification
+        if: failure()
+        run: |
+          echo "💥 Deployment failed. Check the logs above."
+          echo "📋 Possible issues:"
+          echo "  - Missing files"
+          echo "  - Incorrect repository settings"
